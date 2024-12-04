@@ -6,6 +6,7 @@ plugins {
   id 'org.cyclonedx.bom' version '1.10.0'
   id 'io.spring.javaformat' version '0.0.43'
   id "io.spring.nohttp" version "0.0.11"
+  id 'pl.allegro.tech.build.axion-release' version '1.13.3'
 }
 
 apply plugin: 'java'
@@ -15,7 +16,7 @@ apply plugin: 'io.spring.javaformat'
 gradle.startParameter.excludedTaskNames += [ "checkFormatAot", "checkFormatAotTest" ]
 
 group = 'org.springframework.samples'
-version = '3.4.0'
+version = '1.0.0-SNAPSHOT'
 
 java {
   sourceCompatibility = JavaVersion.VERSION_17
@@ -88,3 +89,16 @@ checkFormatAotTest.enabled = false
 
 formatAot.enabled = false
 formatAotTest.enabled = false
+
+task customTask(dependsOn: ['build', 'test']) {
+    doLast {
+        println 'Custom task executed'
+    }
+}
+
+task printVersion {
+    doLast {
+        println "Project Version: $version"
+    }
+}
+
