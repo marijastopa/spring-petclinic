@@ -147,3 +147,19 @@ echo ""
 echo "GCP_SERVICE_ACCOUNT"
 echo "$SA_EMAIL"
 echo ""
+
+echo "Granting additional IAM roles to Cloud Run service account..."
+
+# Log Writer role
+gcloud projects add-iam-policy-binding ${GCP_PROJECT_ID} \
+  --member="serviceAccount:${SA_EMAIL}" \
+  --role="roles/logging.logWriter" \
+  --condition=None
+
+# Metric Writer role  
+gcloud projects add-iam-policy-binding ${GCP_PROJECT_ID} \
+  --member="serviceAccount:${SA_EMAIL}" \
+  --role="roles/monitoring.metricWriter" \
+  --condition=None
+
+echo "Additional IAM roles granted successfully!"

@@ -39,19 +39,6 @@ data "google_service_account" "petclinic" {
   account_id = var.service_account_id
 }
 
-# Grant Cloud Run service account 
-resource "google_project_iam_member" "petclinic_log_writer" {
-  project = var.project_id
-  role    = "roles/logging.logWriter"
-  member  = "serviceAccount:${data.google_service_account.petclinic.email}"
-}
-
-resource "google_project_iam_member" "petclinic_metric_writer" {
-  project = var.project_id
-  role    = "roles/monitoring.metricWriter"
-  member  = "serviceAccount:${data.google_service_account.petclinic.email}"
-}
-
 # Cloud Run Service
 resource "google_cloud_run_v2_service" "petclinic" {
   name     = local.service_name
@@ -119,10 +106,6 @@ resource "google_cloud_run_v2_service" "petclinic" {
     percent = 100
   }
   
-  depends_on = [
-    google_project_iam_member.petclinic_log_writer,
-    google_project_iam_member.petclinic_metric_writer,
-  ]
 }
 
 # IAM Policy for Public Access
