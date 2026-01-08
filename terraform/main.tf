@@ -43,13 +43,13 @@ data "google_service_account" "petclinic" {
 resource "google_project_iam_member" "petclinic_log_writer" {
   project = var.project_id
   role    = "roles/logging.logWriter"
-  member  = "serviceAccount:${google_service_account.petclinic.email}"
+  member  = "serviceAccount:${data.google_service_account.petclinic.email}"
 }
 
 resource "google_project_iam_member" "petclinic_metric_writer" {
   project = var.project_id
   role    = "roles/monitoring.metricWriter"
-  member  = "serviceAccount:${google_service_account.petclinic.email}"
+  member  = "serviceAccount:${data.google_service_account.petclinic.email}"
 }
 
 # Cloud Run Service
@@ -60,7 +60,7 @@ resource "google_cloud_run_v2_service" "petclinic" {
   labels = local.labels
   
   template {
-    service_account = google_service_account.petclinic.email
+    service_account = data.google_service_account.petclinic.email
     
     scaling {
       min_instance_count = var.min_instances
