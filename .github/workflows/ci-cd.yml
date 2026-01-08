@@ -218,7 +218,7 @@ jobs:
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
             -var="region=${{ env.GCP_REGION }}" \
             -var="environment=${{ steps.env.outputs.environment }}" \
-            -var="image_tag=${{ github.ref_name }}\
+            -var="image_tag=${{ github.ref_name }}" \
             -var="min_instances=${{ steps.env.outputs.min_instances }}" \
             -out=tfplan
 
