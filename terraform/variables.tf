@@ -55,3 +55,9 @@ variable "allow_public_access" {
   type        = bool
   default     = true
 }
+
+variable "service_account_id" {
+  description = "Service Account ID for Cloud Run (without @project.iam.gserviceaccount.com)"
+  type        = string
+  default     = "petclinic-ci-cd"
+}

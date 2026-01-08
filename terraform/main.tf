@@ -29,20 +29,14 @@ locals {
 }
 
 # Artifact Registry Repository
-resource "google_artifact_registry_repository" "petclinic" {
+data "google_artifact_registry_repository" "petclinic" {
   location      = var.region
   repository_id = "petclinic"
-  description   = "Docker repository for PetClinic application"
-  format        = "DOCKER"
-  
-  labels = local.labels
 }
 
 # Service Account for Cloud Run
-resource "google_service_account" "petclinic" {
-  account_id   = "petclinic-${var.environment}"
-  display_name = "PetClinic Service Account (${var.environment})"
-  description  = "Service account for PetClinic Cloud Run service"
+data "google_service_account" "petclinic" {
+  account_id = var.service_account_id
 }
 
 # Grant Cloud Run service account 
