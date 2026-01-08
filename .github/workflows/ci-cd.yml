@@ -111,6 +111,7 @@ jobs:
           images: ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/petclinic/spring-petclinic
           tags: |
             type=ref,event=branch
+            type=sha
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
 
