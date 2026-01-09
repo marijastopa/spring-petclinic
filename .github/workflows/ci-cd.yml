@@ -201,7 +201,7 @@ jobs:
       - name: Determine environment
         id: env
         run: |
-          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]] || [[ "${{ github.ref }}" == refs/tags/v* ]]; then
             echo "environment=prod" >> $GITHUB_OUTPUT
             echo "min_instances=1" >> $GITHUB_OUTPUT
           else
