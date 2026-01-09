@@ -111,9 +111,11 @@ jobs:
         with:
           images: ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/petclinic/spring-petclinic
           tags: |
-            type=semver,pattern={{version}}           # v1.0.0
-            type=semver,pattern={{major}}.{{minor}}   # v1.0
-            type=semver,pattern={{major}}             # v1
+            type=semver,pattern={{version}},prefix=v          # v1.0.1 
+            type=semver,pattern={{major}}.{{minor}},prefix=v  # v1.0 
+            type=semver,pattern={{major}},prefix=v            # v1 
+          flavor: |
+            latest=false  
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
