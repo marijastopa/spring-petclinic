@@ -2,8 +2,9 @@
 
 Automated CI/CD pipeline for deploying Spring PetClinic to Google Cloud Platform using GitHub Actions, Docker, and Terraform.
 
-**Live Application:** 
-https://petclinic-prod-71198917000.us-central1.run.app/
+**Live Application:** https://petclinic-prod-uosana3xyq-uc.a.run.app  
+
+**Current Version:** v1.0.4
 
 ## Project Overview
 
@@ -86,52 +87,85 @@ The pipeline executes automatically on push to `main` or `develop` branches:
 
 ## Docker
 
-Multi-stage Dockerfile with optimizations:
-- **Builder stage:** Maven build with dependencies cached separately
-- **Runtime stage:** JRE-only for smaller image size
-- **Security:** Non-root user, health checks configured
-- **Optimization:** Layer caching for faster builds
+### Optimization Strategy
 
-**Local testing:**
-```bash
-docker-compose up
-# Access at http://localhost:8080
-```
+**Multi-stage build:**
+- **Builder stage:** Eclipse Temurin 21 JDK - Maven compilation
+- **Runtime stage:** Eclipse Temurin 21 JRE - Application execution only
+
+**Additional optimizations:**
+- Layer caching for dependencies (faster rebuilds)
+- Non-root user for security
+- Health checks via Spring Actuator
 
 ## Security Implementation
 
-- **Workload Identity:** OIDC authentication (no service account keys stored)
-- **Automated Scanning:** Trivy scans filesystem and container images
-- **Secret Management:** GitHub Secrets with sensitive variable protection
-- **Non-root Container:** Application runs as unprivileged user
-- **SARIF Integration:** Vulnerability reports in GitHub Security tab
+### Vulnerability Scanning
+- **Tool:** Trivy (industry standard)
+- **Stage 1:** Filesystem scan (source code)
+- **Stage 2:** Container image scan (built Docker image)
+- **Severity:** CRITICAL and HIGH vulnerabilities
+- **Integration:** Results uploaded to GitHub Security tab (SARIF format)
+
+### Authentication & Secrets
+- **Workload Identity (OIDC):** Short-lived tokens, no service account keys
+- **GitHub Secrets:** Encrypted storage for sensitive data
+- **Terraform Variables:** Marked as sensitive, never logged
+- **No Hardcoded Credentials:** All secrets managed externally
+
+### Container Security
+- Non-root user (`spring:spring`)
+- Minimal base image (JRE only, no build tools)
+- Regular security scans in CI/CD
+
+## Version Management
+
+This project uses semantic versioning for production releases.
+
+### Creating a Release
+
+```bash
+# Commit all changes
+git add .
+git commit -m "feat: Add new feature"
+git push origin main
+
+# Tag the release
+git tag -a v1.1.0 -m "Release v1.1.0: Description of changes"
+git push origin v1.1.0
+
+# CI/CD automatically:
+# 1. Runs Maven tests
+# 2. Scans for security vulnerabilities  
+# 3. Builds and pushes Docker image
+# 4. Deploys to Cloud Run
+```
+
+### Docker Image Tags
+
+Each release creates three tags:
+- **`v1.0.4`** - Exact version (immutable)
+- **`v1.0`** - Latest patch of v1.0.x (rolling)
+- **`v1`** - Latest minor of v1.x.x (rolling)
+
+---
 
 ## Infrastructure as Code
 
-Terraform manages all cloud resources:
-- Cloud Run service with auto-scaling
-- IAM roles and bindings
-- Health probes (startup + liveness)
-- Resource limits and optimization
+All cloud resources are managed with Terraform:
+- Cloud Run service with auto-scaling (0-10 instances)
+- Health probes (startup + liveness on `/actuator/health`)
+- Resource limits (1 CPU, 512Mi RAM)
+- IAM roles and public access configuration
 
-## Key Features Implemented
+Terraform deployment is automated via CI/CD. 
 
-**Automated CI/CD** - GitHub Actions with 6-stage pipeline  
-**Dockerization** - Multi-stage builds, optimized images  
-**Cloud Deployment** - GCP Cloud Run (serverless, auto-scaling)  
-**Security Scanning** - Trivy for vulnerabilities  
-**Automated Testing** - Maven tests on every commit  
-**Infrastructure as Code** - Terraform for reproducible deployments  
-**Secret Management** - Secure handling via Workload Identity  
-**Pipeline Optimization** - Caching, parallel jobs  
-**Health Monitoring** - Smoke tests, health probes  
-
-## Monitoring
+## Monitoring & Health
 
 - **Health endpoint:** `/actuator/health`
 - **Liveness probe:** `/actuator/health/liveness`
-- **Logs:** Available in GCP Cloud Logging
-- **Pipeline status:** GitHub Actions UI
+- **Logs:** GCP Cloud Logging
+- **Metrics:** GCP Cloud Monitoring
 
 ---
 
